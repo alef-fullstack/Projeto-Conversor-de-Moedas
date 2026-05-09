@@ -1,119 +1,77 @@
 const convertButton = document.querySelector(".convert-button")
-const currencySelect = document.querySelector(".currency-select")
+const currencySelectFrom = document.querySelector(".currency-select-from")
+const currencySelectTo = document.querySelector(".currency-select-to")
 
+const exchangeRates = {
+    "real": 1,
+    "dolar": 4.92,
+    "euro": 5.80,
+    "libra": 6.70,
+    "bitcoin": 394300.96,
+    "rublo": 0.066,
+    "yuan": 0.72
+}
+
+const currencyInfo = {
+    "real": { name: "Real", image: "./assets/brasil 2.png", locale: "pt-BR", code: "BRL" },
+    "dolar": { name: "Dólar Americano", image: "./assets/estados-unidos (1) 1.png", locale: "en-US", code: "USD" },
+    "euro": { name: "Euro", image: "./assets/euro.png", locale: "de-DE", code: "EUR" },
+    "libra": { name: "Libra", image: "./assets/libra 1.png", locale: "en-GB", code: "GBP" },
+    "bitcoin": { name: "BTC", image: "./assets/bitcoin 1.png", locale: "en-US", code: "BTC" },
+    "rublo": { name: "Rublo Russo", image: "./assets/rublo.png", locale: "ru-RU", code: "RUB" },
+    "yuan": { name: "Yuan", image: "./assets/yuan-chines.png", locale: "zh-CN", code: "CNY" }
+}
 
 function convertValues() {
     const inputCurrencyValue = document.querySelector(".input-currency").value
     const currencyValueToConvert = document.querySelector(".currency-value-to-convert")
     const currencyValueConverted = document.querySelector(".currency-value")
-
-    const dolarToday = 4.92
-    const euroToday = 5.80
-    const libraToday = 6.70
-    const bitcointoday = 394300.96
-    const rubloToday = 0.066
-    const yuanToday = 0.72
-
-currencyValueToConvert.innerHTML = new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL"
-}).format(inputCurrencyValue)
-
-    if (currencySelect.value == "dolar") {
-        currencyValueConverted.innerHTML = new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD"
-        }).format(inputCurrencyValue / dolarToday)
-
-    }
-
-    if (currencySelect.value == "euro") {
-        currencyValueConverted.innerHTML = new Intl.NumberFormat("de-DE", {
-            style: "currency",
-            currency: "EUR"
-        }).format(inputCurrencyValue / euroToday)
-
-    }
-
-    if (currencySelect.value == "libra") {
-        currencyValueConverted.innerHTML = new Intl.NumberFormat("en-GB", {
-            style: "currency",
-            currency: "GBP"
-        }).format(inputCurrencyValue / libraToday)
-
-    }
-
-    if (currencySelect.value == "bitcoin") {
-        currencyValueConverted.innerHTML = new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "BTC",
-            minimumFractionDigits: 8,
-        }).format(inputCurrencyValue / bitcointoday)
-
-    }
-
-    if (currencySelect.value == "rublo") {
-        currencyValueConverted.innerHTML = new Intl.NumberFormat("ru-RU", {
-            style: "currency",
-            currency: "RUB"
-        }).format(inputCurrencyValue / rubloToday)
-
-    }
-
-    if (currencySelect.value == "yuan") {
-        currencyValueConverted.innerHTML = new Intl.NumberFormat("zh-CN", {
-            style: "currency",
-            currency: "CNY"
-        }).format(inputCurrencyValue / yuanToday)
-
-    }
-
-
-
+    
+    const fromCurrency = currencySelectFrom.value
+    const toCurrency = currencySelectTo.value
+    
+    // Converter para Real primeiro, depois para a moeda de destino
+    const valueInReal = inputCurrencyValue * exchangeRates[fromCurrency]
+    const convertedValue = valueInReal / exchangeRates[toCurrency]
+    
+    // Formatar moeda de origem
+    currencyValueToConvert.innerHTML = new Intl.NumberFormat(currencyInfo[fromCurrency].locale, {
+        style: "currency",
+        currency: currencyInfo[fromCurrency].code,
+        minimumFractionDigits: fromCurrency === "bitcoin" ? 8 : 2
+    }).format(inputCurrencyValue)
+    
+    // Formatar moeda de destino
+    currencyValueConverted.innerHTML = new Intl.NumberFormat(currencyInfo[toCurrency].locale, {
+        style: "currency",
+        currency: currencyInfo[toCurrency].code,
+        minimumFractionDigits: toCurrency === "bitcoin" ? 8 : 2
+    }).format(convertedValue)
 }
 
-
-
-function changecurrency() {
-    const currencyName = document.getElementById("currency-name")
-    const currencyImage = document.querySelector(".currency-image")
-
-    // Select de cima
-
-    if (currencySelect.value == "dolar") {
-        currencyName.innerHTML = "Dólar Americano"
-        currencyImage.src = "./assets/estados-unidos (1) 1.png"
-    }
-
-    if (currencySelect.value == "euro") {
-        currencyName.innerHTML = "Euro"
-        currencyImage.src = "./assets/euro.png"
-    }
-
-    if (currencySelect.value == "libra") {
-        currencyName.innerHTML = "Libra"
-        currencyImage.src = "./assets/libra 1.png"
-    }
-
-    if (currencySelect.value == "bitcoin") {
-        currencyName.innerHTML = "BTC"
-        currencyImage.src = "./assets/bitcoin 1.png"
-    }
-
-    if (currencySelect.value == "rublo") {
-        currencyName.innerHTML = "Rublo Russo"
-        currencyImage.src = "./assets/rublo.png"
-    }
-
-    if (currencySelect.value == "yuan") {
-        currencyName.innerHTML = "Yuan"
-        currencyImage.src = "./assets/yuan-chines.png"
-    }
-
+function changeFromCurrency() {
+    const currencyNameFrom = document.getElementById("currency-name-from")
+    const currencyImageFrom = document.querySelector(".currency-image-from")
+    
+    const selectedCurrency = currencySelectFrom.value
+    currencyNameFrom.innerHTML = currencyInfo[selectedCurrency].name
+    currencyImageFrom.src = currencyInfo[selectedCurrency].image
+    
     convertValues()
-
 }
 
-currencySelect.addEventListener("change", changecurrency)
+function changeToCurrency() {
+    const currencyNameTo = document.getElementById("currency-name-to")
+    const currencyImageTo = document.querySelector(".currency-image-to")
+    
+    const selectedCurrency = currencySelectTo.value
+    currencyNameTo.innerHTML = currencyInfo[selectedCurrency].name
+    currencyImageTo.src = currencyInfo[selectedCurrency].image
+    
+    convertValues()
+}
+
+currencySelectFrom.addEventListener("change", changeFromCurrency)
+currencySelectTo.addEventListener("change", changeToCurrency)
 convertButton.addEventListener("click", convertValues)
 
